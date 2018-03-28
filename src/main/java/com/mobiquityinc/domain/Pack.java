@@ -10,8 +10,6 @@ public class Pack {
     private Double capacity;
     private List<Item> items;
 
-    public Pack(){}
-
     public Double getCapacity() {
         return capacity;
     }

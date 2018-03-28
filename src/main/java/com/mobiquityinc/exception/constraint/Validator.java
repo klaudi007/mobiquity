@@ -14,7 +14,6 @@ import com.mobiquityinc.exception.APIException;
  * */
 public class Validator {
 
-
     private static final String  PACKAGE_WEIGHT_MSG = "Max weight that a package can take is =< 100";
 
     private static final String  ITEM_WEIGHT_AND_COST_MSG = "Max weight and cost of Item is =< 100";

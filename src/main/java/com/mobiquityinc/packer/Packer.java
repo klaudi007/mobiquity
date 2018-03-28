@@ -19,14 +19,26 @@ public class Packer {
 
     public static List<String> pack(String path){
 
-        List<String> result = null;
+        List<String> result;
 
-        try {
-            List<Pack> packs = Parser.getPackages(path);
-            result = Packer.packer(PackerType.KNAPSACK, packs);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<Pack> packs = Parser.getPackages(path);
+
+        /**
+         *  Check params based on Mobitquity Constraints. (semantic check)
+         * */
+        packs.forEach(pack -> {
+
+            Validator.validate(Parameter.PACKAGE_WEIGHT, pack.getCapacity());
+            Validator.validate(Parameter.ITEMS_COUNT, pack.getItems().size());
+
+            pack.getItems().forEach(item -> {
+                Validator.validate(Parameter.ITEM_WEIGHT, item.getWeight());
+                Validator.validate(Parameter.ITEM_COST, item.getPrice());
+            });
+        });
+
+        result = Packer.packer(PackerType.KNAPSACK, packs);
+
         return result;
     }
 
@@ -45,23 +57,6 @@ public class Packer {
         List<String> result = new ArrayList<>();
 
         for(Pack pack: payload){
-            /**
-             *  Check params based on Mobitquity Constraints.
-             * */
-            Validator.validate(Parameter.PACKAGE_WEIGHT, pack.getCapacity());
-            Validator.validate(Parameter.ITEMS_COUNT, pack.getItems().size());
-            pack.getItems().forEach(e -> {
-                Validator.validate(Parameter.ITEM_WEIGHT, e.getWeight());
-                Validator.validate(Parameter.ITEM_COST, e.getPrice());
-            });
-
-
-            /**
-             *  Or we can simple get filtered items without validating
-             *  item weight and cost.
-             * */
-//            item.stream().filter(e -> e.getWeight() <= 100 && e.getPrice() <=100 ).collect(Collectors.toList());
-
             List<Item> selectedItems = packerAPI.pack(pack.getCapacity(), pack.getItems());
             String str = "-";
             if(selectedItems != null && !selectedItems.isEmpty()){
